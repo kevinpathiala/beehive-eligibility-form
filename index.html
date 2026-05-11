@@ -86,11 +86,17 @@
 
   /* Form container — sized to fit inside Webflow page flow, not full viewport */
   #beehive-form .stage {
-    min-height: 720px;
     display: flex;
     flex-direction: column;
     position: relative;
-    padding-bottom: 120px; /* space for the in-flow footer */
+  }
+  #beehive-form .main {
+    padding-bottom: 24px !important;
+  }
+  #beehive-form .footer-nav {
+    position: static !important;
+    background: transparent !important;
+    padding-top: 8px !important;
   }
 
   /* Restart row (shown above progress when going back is possible) */
