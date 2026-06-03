@@ -2277,12 +2277,18 @@ const submitToHubSpot = async (data, result) => {
     { name: map.loanAmount, value: String(data.loanAmount) },
     { name: map.qualified, value: result.qualified ? 'Eligible' : 'Not eligible' },
   ];
-  const url = `https://api.hsforms.com/submissions/v3/integrations/submit/${cfg.portalId}/${cfg.formGuid}`;
+  const url = `https://api.hsforms.com/submissions/v3/integration/submit/${cfg.portalId}/${cfg.formGuid}`;
   const res = await fetch(url, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ fields, context: { pageUri: window.location.href, pageName: document.title } }),
   });
+  if (!res.ok) {
+    const detail = await res.text().catch(() => '');
+    console.error('[Beehive] HubSpot rejected the submission:', res.status, detail);
+  } else {
+    console.info('[Beehive] HubSpot submission accepted.');
+  }
   return { ok: res.ok };
 };
 
