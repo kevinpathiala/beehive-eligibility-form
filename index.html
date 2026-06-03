@@ -2265,17 +2265,19 @@ const submitToHubSpot = async (data, result) => {
   const [firstname, ...rest] = (data.name || '').trim().split(/\s+/);
   const lastname = rest.join(' ');
   const fields = [
-    { name: 'firstname', value: firstname || '' },
-    { name: 'lastname', value: lastname || '' },
-    { name: map.email, value: data.email },
-    { name: map.phone, value: `${data.phoneCode}${data.phone.replace(/\s/g, '')}` },
-    { name: map.businessName, value: data.businessName },
-    { name: map.businessAge, value: data.businessAge },
-    { name: map.sector, value: data.sector },
-    { name: map.industry, value: data.industry },
-    { name: map.revenue, value: String(data.revenue) },
-    { name: map.loanAmount, value: String(data.loanAmount) },
-    { name: map.qualified, value: result.qualified ? 'Eligible' : 'Not eligible' },
+    { objectTypeId: '0-1', name: 'firstname', value: firstname || '' },
+    { objectTypeId: '0-1', name: 'lastname', value: lastname || '' },
+    { objectTypeId: '0-1', name: map.email, value: data.email },
+    { objectTypeId: '0-1', name: map.phone, value: `${data.phoneCode}${data.phone.replace(/\s/g, '')}` },
+    { objectTypeId: '0-1', name: map.businessName, value: data.businessName },
+    { objectTypeId: '0-1', name: map.businessAge, value: data.businessAge },
+    { objectTypeId: '0-1', name: map.sector, value: data.sector },
+    { objectTypeId: '0-1', name: map.industry, value: data.industry },
+    { objectTypeId: '0-1', name: map.revenue, value: String(data.revenue) },
+    { objectTypeId: '0-1', name: map.loanAmount, value: String(data.loanAmount) },
+    { objectTypeId: '0-1', name: map.qualified, value: result.qualified ? 'Eligible' : 'Not eligible' },
+    // Company object — the form has a required "Company name" field (0-2/name)
+    { objectTypeId: '0-2', name: 'name', value: data.businessName },
   ];
   const url = `https://api.hsforms.com/submissions/v3/integration/submit/${cfg.portalId}/${cfg.formGuid}`;
   const res = await fetch(url, {
