@@ -610,6 +610,47 @@
     margin-top: 12px;
   }
 
+  /* Intro / welcome screen */
+  #beehive-form .intro {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 64px 20px;
+    min-height: 600px;
+    flex: 1;
+  }
+  #beehive-form .intro-inner {
+    max-width: 560px;
+    width: 100%;
+  }
+  .intro-title {
+    font-size: 52px;
+    font-weight: 700;
+    letter-spacing: -0.03em;
+    line-height: 1.05;
+    margin: 0 0 16px;
+    text-wrap: balance;
+  }
+  .intro-text {
+    color: var(--text-muted);
+    font-size: 19px;
+    line-height: 1.5;
+    margin: 0 0 32px;
+    text-wrap: pretty;
+    max-width: 460px;
+  }
+  .intro-cta {
+    flex: none;
+    align-self: flex-start;
+    padding-left: 32px;
+    padding-right: 32px;
+  }
+  @media (max-width: 480px) {
+    .intro-title { font-size: 34px; }
+    .intro-text { font-size: 16px; }
+    #beehive-form .intro { padding: 40px 20px; }
+  }
+
   /* Result screens */
   .result {
     padding-top: 8px;
@@ -2218,10 +2259,10 @@ window.BEEHIVE_FIELD_MAP = {
   country: 'country_of_business',
   businessAge: 'business_age_range',
   sector: 'product_market_sector',
-  industry: 'industry_linkedin',
+  industry: 'industry',
   revenue: 'monthly_revenue_aed',
   audited: 'audited_accounts',
-  loanAmount: 'funding_amount_aed',
+  loanAmount: 'form_funding_amount',
   purposes: 'funding_purpose',
   qualified: 'eligibility_status',
   indicativeOffer: 'indicative_offer_aed',
@@ -2337,6 +2378,7 @@ const App = () => {
   });
 
   const [stepIdx, setStepIdx] = useState(0);
+  const [started, setStarted] = useState(false);
   const [errors, setErrors] = useState({});
   const [submitting, setSubmitting] = useState(false);
   const [done, setDone] = useState(null);
@@ -2428,7 +2470,18 @@ const App = () => {
 
   return (
     <div className="stage">
-      {!done && stepIdx > 0 && hasCachedData && (
+      {!done && !started && (
+        <div className="intro">
+          <div className="intro-inner">
+            <div className="eyebrow"><span className="eyebrow-dot" />Beehive funding</div>
+            <h1 className="intro-title">Your funding journey starts here</h1>
+            <p className="intro-text">Take a 2-minute check to see what funding could look like for your business.</p>
+            <button className="btn btn-primary intro-cta" onClick={() => setStarted(true)}>Explore my potential</button>
+          </div>
+        </div>
+      )}
+
+      {!done && started && stepIdx > 0 && hasCachedData && (
         <div className="restart-row">
           <button className="restart-btn" onClick={restart} title="Go back to the first step, keeping your answers">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" width="14" height="14"><path d="M3 12a9 9 0 1 0 3-6.7L3 8" /><path d="M3 3v5h5" /></svg>
@@ -2437,7 +2490,7 @@ const App = () => {
         </div>
       )}
 
-      {!done && (
+      {!done && started && (
         <div className="progress-wrap">
           {tweaks.progressStyle === 'stepper' ? (
             <>
@@ -2466,7 +2519,7 @@ const App = () => {
       )}
 
       <main className="main">
-        {!done && StepComp && (
+        {!done && started && StepComp && (
           <div key={current.id} className="step">
             <StepComp data={data} set={set} next={next} errors={errors} />
           </div>
@@ -2474,13 +2527,11 @@ const App = () => {
         {done && <ResultScreen data={data} result={done} onRestart={restart} onStartFresh={startFresh} />}
       </main>
 
-      {!done && (
+      {!done && started && (
         <div className="footer-nav">
           <div className="footer-inner-col">
             <div className="footer-inner">
-              {stepIdx > 0 && (
-                <button className="btn btn-back" onClick={back}>Back</button>
-              )}
+              <button className="btn btn-back" onClick={() => stepIdx === 0 ? setStarted(false) : back()}>Back</button>
               <button
                 className="btn btn-primary"
                 onClick={handleNext}
