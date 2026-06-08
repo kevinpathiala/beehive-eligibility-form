@@ -578,8 +578,7 @@
     background: var(--accent);
     color: var(--accent-text);
     flex: 1;
-    text-transform: uppercase;
-    letter-spacing: 0.04em;
+    letter-spacing: 0.01em;
     font-size: 15px;
   }
   .btn-primary:hover:not(:disabled) {
@@ -628,14 +627,14 @@
     font-weight: 700;
     letter-spacing: -0.03em;
     line-height: 1.05;
-    margin: 0 0 16px;
+    margin: 0 0 28px;
     text-wrap: balance;
   }
   .intro-text {
     color: var(--text-muted);
     font-size: 19px;
     line-height: 1.5;
-    margin: 0 0 32px;
+    margin: 0 0 44px;
     text-wrap: pretty;
     max-width: 460px;
   }
@@ -2473,10 +2472,9 @@ const App = () => {
       {!done && !started && (
         <div className="intro">
           <div className="intro-inner">
-            <div className="eyebrow"><span className="eyebrow-dot" />Beehive funding</div>
             <h1 className="intro-title">Your funding journey starts here</h1>
             <p className="intro-text">Take a 2-minute check to see what funding could look like for your business.</p>
-            <button className="btn btn-primary intro-cta" onClick={() => setStarted(true)}>Explore my potential</button>
+            <button className="btn btn-primary intro-cta" onClick={() => setStarted(true)}>Begin<Ico.arrowRight /></button>
           </div>
         </div>
       )}
@@ -2537,7 +2535,7 @@ const App = () => {
                 onClick={handleNext}
                 disabled={!current.isValid() || submitting}
               >
-                {submitting ? <><span className="spinner" /> Sending...</> : (current.id === 'contact' ? 'GET MY ELIGIBILITY' : 'CONTINUE')}
+                {submitting ? <><span className="spinner" /> Sending...</> : (current.id === 'contact' ? 'Get My Eligibility' : 'Continue')}
               </button>
             </div>
           </div>
