@@ -89,6 +89,7 @@
     display: flex;
     flex-direction: column;
     position: relative;
+    z-index: 1;
   }
   #beehive-form .main {
     padding-bottom: 24px !important;
@@ -623,17 +624,58 @@
     width: 100%;
   }
   @keyframes beehiveFadeUp {
-    from { opacity: 0; transform: translateY(16px); }
+    from { opacity: 0; transform: translateY(20px); }
     to { opacity: 1; transform: translateY(0); }
   }
   @media (prefers-reduced-motion: no-preference) {
     #beehive-form .intro-inner > * {
       opacity: 0;
-      animation: beehiveFadeUp 0.7s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+      animation: beehiveFadeUp 1.2s cubic-bezier(0.22, 1, 0.36, 1) forwards;
     }
-    #beehive-form .intro-title { animation-delay: 0.08s; }
-    #beehive-form .intro-text { animation-delay: 0.22s; }
-    #beehive-form .intro-cta { animation-delay: 0.36s; }
+    #beehive-form .intro-title { animation-delay: 0.2s; }
+    #beehive-form .intro-text { animation-delay: 0.55s; }
+    #beehive-form .intro-cta { animation-delay: 0.9s; }
+  }
+
+  /* Ambient drifting glows behind the form */
+  .bg-blobs {
+    position: fixed;
+    inset: 0;
+    overflow: hidden;
+    pointer-events: none;
+    z-index: 0;
+  }
+  .bg-blobs .blob {
+    position: absolute;
+    border-radius: 50%;
+    filter: blur(80px);
+    transition: opacity 800ms ease;
+  }
+  .bg-blobs.dimmed .blob {
+    opacity: 0.35;
+  }
+  .bg-blobs .blob-1 {
+    width: 520px; height: 520px;
+    top: -180px; left: -180px;
+    background: radial-gradient(circle, rgba(224,8,0,0.20), transparent 70%);
+    animation: blobDrift1 30s ease-in-out infinite alternate;
+  }
+  .bg-blobs .blob-2 {
+    width: 480px; height: 480px;
+    bottom: -200px; right: -160px;
+    background: radial-gradient(circle, rgba(224,8,0,0.16), transparent 70%);
+    animation: blobDrift2 38s ease-in-out infinite alternate;
+  }
+  @keyframes blobDrift1 {
+    from { transform: translate(0, 0) scale(1); }
+    to { transform: translate(70px, 90px) scale(1.15); }
+  }
+  @keyframes blobDrift2 {
+    from { transform: translate(0, 0) scale(1); }
+    to { transform: translate(-80px, -60px) scale(1.12); }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .bg-blobs .blob { animation: none !important; }
   }
   .intro-title {
     font-size: 52px;
@@ -2482,6 +2524,10 @@ const App = () => {
 
   return (
     <div className="stage">
+      <div className={`bg-blobs ${(started || done) ? 'dimmed' : ''}`} aria-hidden="true">
+        <span className="blob blob-1"></span>
+        <span className="blob blob-2"></span>
+      </div>
       {!done && !started && (
         <div className="intro">
           <div className="intro-inner">
