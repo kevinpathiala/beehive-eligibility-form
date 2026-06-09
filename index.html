@@ -2227,8 +2227,8 @@ const StepContact = ({ data, set, errors }) => {
   return (
     <>
       <div className="eyebrow"><span className="eyebrow-dot" />Almost there</div>
-      <h1 className="q-title">Where should we get in touch with you?</h1>
-      <p className="q-sub">A Beehive advisor will reach out as soon as possible.</p>
+      <h1 className="q-title">Where should we send your result?</h1>
+      <p className="q-sub">A Beehive advisor will reach out within one working day.</p>
       <TextField label="Your name" value={data.name} onChange={(v) => set({ name: v })} placeholder="First and last name" error={errors.name} autoFocus />
       <TextField label="Business name" value={data.businessName} onChange={(v) => set({ businessName: v })} placeholder="Trading or legal name" error={errors.businessName} />
       <TextField label="Work email" type="email" inputMode="email" value={data.email} onChange={(v) => set({ email: v })} placeholder="you@business.com" error={errors.email} />
@@ -2241,7 +2241,7 @@ const StepContact = ({ data, set, errors }) => {
           onChange={(e) => set({ terms: e.target.checked })}
         />
         <span className="tc-text">
-          I agree to Beehive's <a href="#" target="_blank" rel="noopener">Terms of Service</a> and <a href="#" target="_blank" rel="noopener">Privacy Policy</a>, and consent to being contacted about my application.
+          I agree to Beehive's <a href="https://www.beehive.ae/terms-and-conditions" target="_blank" rel="noopener">Terms of Service</a> and <a href="https://www.beehive.ae/privacy-policy" target="_blank" rel="noopener">Privacy Policy</a>, and consent to being contacted about my application.
         </span>
       </label>
       {errors.terms && <div className="tc-err">{errors.terms}</div>}
