@@ -1,4 +1,11 @@
 <!DOCTYPE html><html lang="en" style="--accent: #E00800;"><head>
+<!-- Google Tag Manager -->
+<script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+})(window,document,'script','dataLayer','GTM-WBNWW2X9');</script>
+<!-- End Google Tag Manager -->
 
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
@@ -1066,6 +1073,10 @@
   </svg>
 </template>
 <body class="theme-light">
+  <!-- Google Tag Manager (noscript) -->
+  <noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-WBNWW2X9"
+  height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
+  <!-- End Google Tag Manager (noscript) -->
   <div id="beehive-form"><div id="root"></div></div>
 
   <script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
@@ -2644,6 +2655,53 @@ const ResultScreen = ({ data, result, onRestart, onStartFresh }) => {
 
 ReactDOM.createRoot(document.getElementById('root')).render(<App />);
 
+  </script>
+
+  <!-- Event tracking → GTM dataLayer + parent postMessage -->
+  <script>
+  (function() {
+    function track(eventName, params) {
+      window.dataLayer = window.dataLayer || [];
+      window.dataLayer.push(Object.assign({ event: eventName }, params));
+      if (window.parent !== window) {
+        window.parent.postMessage(
+          { source: 'beehive-eligibility-form', event: eventName, params: params },
+          'https://www.beehive.ae'
+        );
+      }
+    }
+
+    // FORM START — first interaction with any field
+    var started = false;
+    document.addEventListener('focusin', function(e) {
+      if (!started && e.target.matches('input, select, textarea')) {
+        started = true;
+        track('form_start', { form_name: 'funding_check_eligibility' });
+      }
+    });
+
+    // STEP COMPLETE + FORM SUBMIT
+    // This React form has no <form> element and re-renders its buttons, so we
+    // delegate clicks. The primary button advances each step ("Continue") and
+    // submits on the contact step ("Get My Eligibility"); "Begin" starts the flow.
+    document.addEventListener('click', function(e) {
+      var btn = e.target.closest('.btn-primary, .intro-cta');
+      if (!btn || btn.disabled) return;
+      var label = (btn.textContent || '').trim().toLowerCase();
+      if (label.indexOf('eligibility') !== -1) {
+        track('form_submit', { form_name: 'funding_check_eligibility' });
+      } else {
+        track('form_step_complete', { form_name: 'funding_check_eligibility', step: label || 'unknown' });
+      }
+    });
+
+    // DWELL TIME
+    [30000, 60000, 120000].forEach(function(ms) {
+      setTimeout(function() {
+        track('dwell_time', { dwell_seconds: ms / 1000, page_path: 'funding-check-form' });
+      }, ms);
+    });
+  })();
   </script>
 
 </body></html>
