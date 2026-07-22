@@ -1,11 +1,8 @@
 <!DOCTYPE html><html lang="en" style="--accent: #E00800;"><head>
 <!-- Google Tag Manager -->
-<script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
-new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
-j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
-'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
-})(window,document,'script','dataLayer','GTM-WBNWW2X9');</script>
-<!-- End Google Tag Manager -->
+<!-- GTM intentionally NOT loaded inside the iframe — it would load the same
+     container (GTM-WBNWW2X9) as the parent site and double-count. Events are
+     relayed to the parent page's dataLayer via postMessage instead. -->
 
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
@@ -1103,10 +1100,7 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
   </svg>
 </template>
 <body class="theme-light">
-  <!-- Google Tag Manager (noscript) -->
-  <noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-WBNWW2X9"
-  height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
-  <!-- End Google Tag Manager (noscript) -->
+  <!-- GTM noscript removed — container runs on the parent page, not the iframe -->
   <div id="beehive-form"><div id="root"></div></div>
 
   <script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
@@ -2379,11 +2373,17 @@ const submitToHubSpot = async (data, result) => {
     // Company object — the form has a required "Company name" field (0-2/name)
     { objectTypeId: '0-2', name: 'name', value: data.businessName },
   ];
+  // Attach forwarded UTMs (from the parent landing page) as contact fields
+  const utms = window.beehiveUtms || {};
+  ['utm_source','utm_medium','utm_campaign','utm_content','utm_term'].forEach((k) => {
+    if (utms[k]) fields.push({ objectTypeId: '0-1', name: k, value: utms[k] });
+  });
+  const pageUri = window.beehiveParentUri || window.location.href;
   const url = `https://api.hsforms.com/submissions/v3/integration/submit/${cfg.portalId}/${cfg.formGuid}`;
   const res = await fetch(url, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ fields, context: { pageUri: window.location.href, pageName: document.title } }),
+    body: JSON.stringify({ fields, context: { pageUri: pageUri, pageName: document.title } }),
   });
   if (!res.ok) {
     const detail = await res.text().catch(() => '');
@@ -2722,10 +2722,19 @@ ReactDOM.createRoot(document.getElementById('root')).render(<App />);
       if (window.parent !== window) {
         window.parent.postMessage(
           { source: 'beehive-eligibility-form', event: eventName, params: params },
-          'https://www.beehive.ae'
+          '*'
         );
       }
     }
+
+    // Receive UTMs + parent page URL forwarded from the embed script
+    window.beehiveUtms = window.beehiveUtms || {};
+    window.addEventListener('message', function(e) {
+      if (e.data && e.data.type === 'beehive_utms') {
+        window.beehiveUtms = e.data.utms || {};
+        if (e.data.pageUri) window.beehiveParentUri = e.data.pageUri;
+      }
+    });
 
     // FORM START — first interaction with any field
     var started = false;
