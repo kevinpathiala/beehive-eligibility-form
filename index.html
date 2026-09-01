@@ -2566,7 +2566,10 @@ const App = () => {
 
   const handleNext = () => {
     trackFormStart();
-    if (current.id === 'contact') return handleSubmit();
+    if (current.id === 'contact') {
+      trackEvent('form_step_complete', { step: 'contact', step_label: STEP_LABELS.contact || 'contact_details' });
+      return handleSubmit();
+    }
     if (!current.isValid()) return;
     trackEvent('form_step_complete', { step: current.id, step_label: STEP_LABELS[current.id] || current.id });
     next();
