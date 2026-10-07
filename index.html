@@ -700,6 +700,18 @@
     #beehive-form .intro { padding: 40px 20px; }
   }
 
+  /* Preset chips under sliders — tap instead of drag */
+  .chips { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 14px; }
+  .chip {
+    flex: 1 1 auto; min-width: 64px;
+    background: var(--surface); border: 1px solid var(--border); color: var(--text);
+    font-family: inherit; font-size: 13px; font-weight: 600;
+    padding: 9px 10px; border-radius: 999px; cursor: pointer;
+    transition: all 180ms var(--ease-onward);
+  }
+  .chip:hover { border-color: var(--border-strong); background: var(--surface-hover); }
+  .chip.active { background: var(--surface-selected); border-color: var(--accent); color: var(--accent); }
+
   /* Result screens */
   .result {
     padding-top: 8px;
@@ -2214,8 +2226,8 @@ const StepRevenue = ({ data, set }) => {
   const ccy = ccyOf(data);
   const fx = fxOf(data);
   // Stored in AED-equivalent (annual)
-  const maxAED = 10_000_000;
-  const stepAED = 100_000;
+  const maxAED = 50_000_000;
+  const stepAED = 250_000;
   return (
     <>
       <div className="eyebrow"><span className="eyebrow-dot" />Trading volume</div>
@@ -2232,6 +2244,11 @@ const StepRevenue = ({ data, set }) => {
         formatBound={(v) => v === maxAED ? `${ccy.symbol} ${formatAED(maxAED * fx)}+` : `${ccy.symbol} ${formatAED(v * fx)}`}
         caption="Drag to set your annual revenue"
       />
+      <div className="chips">
+        {[2_000_000, 5_000_000, 10_000_000, 25_000_000, 50_000_000].map((v) => (
+          <button key={v} type="button" className={`chip ${data.revenueTouched && data.revenue === v ? 'active' : ''}`} onClick={() => set({ revenue: v, revenueTouched: true })}>{`${ccy.symbol} ${formatAED(v * fx)}${v === maxAED ? '+' : ''}`}</button>
+        ))}
+      </div>
     </>
   );
 };
