@@ -2478,6 +2478,8 @@ const STEP_LABELS = {
   loan: 'funding_amount',
   contact: 'contact_details',
 };
+window.trackEvent = trackEvent;
+window.STEP_LABELS = STEP_LABELS;
 
 // Dwell time — fires once each at 30s / 60s / 120s after load.
 [30000, 60000, 120000].forEach((ms) => {
@@ -2617,7 +2619,9 @@ const App = () => {
       return handleSubmit();
     }
     if (!current.isValid()) return;
-    trackEvent('form_step_complete', { step: current.id, step_label: STEP_LABELS[current.id] || current.id });
+    const stepParams = { step: current.id, step_label: (window.STEP_LABELS && window.STEP_LABELS[current.id]) || current.id };
+    if (current.id === 'revenue') stepParams.annual_revenue_aed = Math.round(data.revenue);
+    window.trackEvent && window.trackEvent('form_step_complete', stepParams);
     next();
   };
 
